@@ -76,8 +76,8 @@ function showHacks() {
 	let i = 0, j = 0;
 	for (i=0; i<gameData.numHacks; i++) {
 		hacks.innerHTML += `<div class="cp_row" id="Hack_${i}">
-			<div class="cp_cell" id="CharHack_${i}">xx xx xx</div>
-			<div class="cp_cell" id="NameHack_${i}">${gameData.hacks[i].text}</div></div>`
+			<div class="hack_cell" id="CharHack_${i}">xx xx xx</div>
+			<div class="hack_cell" id="NameHack_${i}">${gameData.hacks[i].text}</div></div>`
 	}
 }
 

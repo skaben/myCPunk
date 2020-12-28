@@ -51,18 +51,38 @@ function getCoords (elem) {
 	return([elem_row,elem_col]);
 }
 
-function fullField (numChars) {
+function genChars(numC) {
+	let i = 0, j = 0;
+	let gameChars = [];
+	let tmpChar = 0;
+	let flag = 0;
+	while (i < numC) {
+		flag = 0;
+		tmpChar = getRandomInt(0,255);
+		tmpChar = pad(tmpChar.toString(16),2);
+		for (j=0; j<i; j++) {
+			if (gameChars[j] === tmpChar) {
+				flag = 1;
+			}
+		}
+		if (flag != 1) {
+			gameChars[i] = tmpChar;
+			i++;
+		}
+	}
+	return gameChars;
+}
+
+function fullField (numC, numR, chars) {
 	let i = 0, j = 0;
 	let gameChars = [];
 	let gameLocalTable = [];
-	let tmpChar = 0;
-	for (i=0; i<numChars; i++) {
-		tmpChar = getRandomInt(0,255);
-		gameChars[i] = tmpChar.toString(16);
-	}
-	for (i=0; i<5; i++) {
+	
+	gameChars = genChars(chars);
+
+	for (i=0; i<numR; i++) {
 		gameLocalTable[i] = [];
-		for (j=0; j<5; j++) {
+		for (j=0; j<numC; j++) {
 			gameLocalTable[i][j] = {};
 			tChar = gameChars[getRandomInt(0,4)];
 			gameLocalTable[i][j].char = tChar;
@@ -75,24 +95,25 @@ function fullField (numChars) {
 function showHacks() {
 	let i = 0, j = 0;
 	for (i=0; i<gameData.numHacks; i++) {
-		hacks.innerHTML += `<div class="cp_row" id="Hack_${i}">
-			<div class="hack_cell" id="CharHack_${i}">xx xx xx</div>
-			<div class="hack_cell" id="NameHack_${i}">${gameData.hacks[i].text}</div></div>`
+		hacks.innerHTML += `<div class="cpinf_row" id="Hack_${i}">
+			<div class="сpinf_l_cell" id="CharHack_${i}">xx xx xx</div>
+			<div class="сpinf_r_cell" id="NameHack_${i}">${gameData.hacks[i].text}</div></div>`
 	}
 }
 
 const numRows = 5;
 const numCols = 5;
+const numChars = 5;
 
 let timeOut = gameData.timeOut;
 let timer = document.getElementById('timer');
 let hacks = document.getElementById('hacks');
-let gameTable = fullField(5);
+let gameTable = fullField(numRows, numCols, numChars);
 
 let curRow = 0, curCol = 0;
 
-for (let i=0; i<5; i++) {
-	for (let j=0; j<5; j++) {
+for (let i=0; i<numRows; i++) {
+	for (let j=0; j<numCols; j++) {
 		gameTable[i][j].elem.innerHTML = gameTable[i][j].char;
 	}
 }

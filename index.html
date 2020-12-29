@@ -14,12 +14,17 @@
       <div class="screen__effects-stripe"></div>
     </div>
     <div class="screen screen__content">
+	  <!-- зачем тут нижние подчеркивания? 
+		   в предыдущих классах типа screen__content они означают вложенность, 
+		   а тут? -->
       <div id="__outer">
         <div id="__background">
 	  <div class="timer" id="timer"></div>
         <div class="interface interface_field">
 			<div class="cp_table">
 				<div class="cp_row" id="4">
+					<!-- пробел в id недопустим. что это? для таких вещей есть data-атрибуты
+					https://developer.mozilla.org/ru/docs/Web/Guide/HTML/Using_data_attributes -->
 					<div class="cp_cell" id="4 0"></div>
 					<div class="cp_cell" id="4 1"></div>
 					<div class="cp_cell" id="4 2"></div>				
@@ -55,7 +60,7 @@
 					<div class="cp_cell" id="0 4"></div>
 				</div>
 			</div>
-			<div class="cpinf_table" id="hacks"></div>
+			<div class="cp_table cp_table-inf" id="hacks"></div>
         </div>
         </div>
       </div>

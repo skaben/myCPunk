@@ -7,6 +7,16 @@
   margin-right: 2rem;
 }
 
+/* пожалуйста, учись пользоваться классами. 
+   классы нужны, чтобы выделять общие стили в абстракции 
+   это замена cpinf_table, который полностью дублирует cp_table
+   кроме параметра width. Логично выделить эту ширину в отдельный класс
+   и назначить той таблице, что нужно модифицировать - оба класса.
+*/
+.cp_table-inf {
+  width: 60%;
+}
+
 .cp_row {
   width: 100%;
   height: 2rem;
@@ -21,36 +31,26 @@
   padding: 1rem;
 }
 
-.cpinf_table {
-  border: 1px solid blue;
-  padding: 1rem;
-  height: 40%;
-  width: 60%;
-  float: left;
-  margin-right: 2rem;
-}
 
 .cpinf_row {
   width: 100%;
   height: 2rem;
 }
 
-.cpinf_l_cell {
+.cpinf_row div {
   position: relative;
   float: left;
   box-sizing: border-box;
   height: 100%;
-  width: 40%;
   padding: 1rem;
 }
 
+.cpinf_l_cell {
+  width: 40%;
+}
+
 .cpinf_r_cell {
-  position: relative;
-  float: left;
-  box-sizing: border-box;
-  height: 100%;
   width: 60%; 
-  padding: 1rem;
 }
 
 .timer	{
@@ -138,5 +138,5 @@
   margin-top: 5rem;
   width: 100vw;
 	height: 60vh;
-	float: left;
+	/* float: left; вот поэтому уехал таймер. зачем тебе float на обертке? */
 }

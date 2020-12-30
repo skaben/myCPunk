@@ -121,6 +121,10 @@ const numRows = 5;
 const numCols = 5;
 const numChars = 5;
 
+let timeFlag = 0;
+
+let colFlag = 0; // При 0 выбираем столбец, при 1 - строку.
+
 let curRow = 0, curCol = 0;
 
 let timeOut = gameData.timeOut;
@@ -135,6 +139,7 @@ const gameTable = [	[{},{},{},{},{}],
 fullField(numChars);
 console.log(gameTable[0][4].char);
 showHacks(gameTable);
+document.addEventListener("keydown", onKey);
 
 if (timeOut > 0) {
 	timerFunc = setInterval(function () {
@@ -155,39 +160,37 @@ if (timeOut > 0) {
 					// Выводим строку в блок для показа таймера
 					timer.innerHTML = strOut;
 			}
-			--timeOut; // Уменьшаем таймер
+			timeOut -= timeFlag; // Уменьшаем таймер
 	}, 1000)
 } else {
 	timer.style.display = "none";
 }
 
-document.addEventListener("keydown", this.onKey);
-
 function onKey(event) {
 	if(event.code === 'ArrowDown' || event.code === 'KeyS') {
-		gameTable[curRow][curCol].elem.style.border = "none";
+		gameTable[curRow][curCol].elem.classList.remove('full_hl');
 		if (curRow > 0) {
 			curRow = curRow - 1;
 		} else {
 			curRow = numRows - 1;
 		}
-		gameTable[curRow][curCol].elem.style.border = "thick solid #00DD00";
+		gameTable[curRow][curCol].elem.classList.add('full_hl');
 	} else if (event.code === 'ArrowUp' || event.code === 'KeyW') {
-		gameTable[curRow][curCol].elem.style.border = "none";
+		gameTable[curRow][curCol].elem.classList.remove('full_hl');
 		curRow = (curRow + 1) % numRows;
-		gameTable[curRow][curCol].elem.style.border = "thick solid #00DD00";
+		gameTable[curRow][curCol].elem.classList.add('full_hl');
 	} else if (event.code === 'ArrowLeft' || event.code === 'KeyA') { 
-		gameTable[curRow][curCol].elem.style.border = "none";
+		gameTable[curRow][curCol].elem.classList.remove('full_hl');
 		if (curCol > 0) {
 			curCol = curCol - 1;
 		} else {
 			curCol = numCols - 1;
 		}
-		gameTable[curRow][curCol].elem.style.border = "thick solid #00DD00";
+		gameTable[curRow][curCol].elem.classList.add('full_hl');
 	} else if (event.code === 'ArrowRight' || event.code === 'KeyD') { 
-		gameTable[curRow][curCol].elem.style.border = "none";
+		gameTable[curRow][curCol].elem.classList.remove('full_hl');
 		curCol = (curCol + 1) % numCols;
-		gameTable[curRow][curCol].elem.style.border = "thick solid #00DD00";
+		gameTable[curRow][curCol].elem.classList.add('full_hl');
 	} else if (event.code === 'Enter' || event.code === 'NumpadEnter') {
 		// console.log("Enter");
 	}	

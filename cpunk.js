@@ -73,30 +73,46 @@ function genChars(numC) {
 	return gameChars;
 }
 
-function fullField (numR, numC, chars) {
-	let i = 0, j = 0;
-	let gameChars = [];
-	let gameLocalTable = [];
-	
-	gameChars = genChars(chars);
-
-	for (i=0; i<numR; i++) {
-		gameLocalTable[i] = [];
-		for (j=0; j<numC; j++) {
-			gameLocalTable[i][j] = {};
-			tChar = gameChars[getRandomInt(0,4)];
-			gameLocalTable[i][j].char = tChar;
-			gameLocalTable[i][j].elem = document.querySelectorAll(`[data-coords="${i} ${j}"]`);
-		}
-	}
-	return gameLocalTable;
+function fullField (numChars) {
+	let row = 0, col = 0;
+	const gameChars = genChars(numChars);
+	const cellsHash=document.querySelectorAll(`[data-coords]`);
+	cellsHash.forEach( function(item) {
+		[row, col] = item.getAttribute('data-coords').split(" ");
+		tChar = gameChars[getRandomInt(0,4)];
+		gameTable[row][col].elem = item;
+		gameTable[row][col].char = tChar;
+		gameTable[row][col].elem.innerHTML = tChar;
+	});
+	console.log(gameTable[0]);
 }
 
-function showHacks() {
-	let i = 0, j = 0;
+function getHack(hackLen, gameTable) {
+	let i = 0, flag = 0;
+	let col = getRandomInt(0,4), row = getRandomInt(0,4);
+	let hackStr = "";
+	hackStr = gameTable[row][col].char;
+	for (i=1; i<hackLen; i++) {
+		if (flag===0) {
+			row = (row + getRandomInt(0,4)) % numRows;
+			hackStr += " "+gameTable[row][col].char;
+			flag = 1;
+		} else {
+			col = (col + getRandomInt(0,4)) % numCols;
+			hackStr += " "+gameTable[row][col].char;
+			flag = 0;
+		}
+	}
+	return hackStr;
+}
+
+function showHacks(gameTable) {
+	let i = 0;
+	let hackString = "";
 	for (i=0; i<gameData.numHacks; i++) {
+		hackString = getHack(gameData.hacks[i].len, gameTable);
 		hacks.innerHTML += `<div class="cpinf_row" id="Hack_${i}">
-			<div class="сpinf_l_cell" id="CharHack_${i}">xx xx xx</div>
+			<div class="сpinf_l_cell" id="CharHack_${i}">${hackString}</div>
 			<div class="сpinf_r_cell" id="NameHack_${i}">${gameData.hacks[i].text}</div></div>`
 	}
 }
@@ -105,21 +121,20 @@ const numRows = 5;
 const numCols = 5;
 const numChars = 5;
 
+let curRow = 0, curCol = 0;
+
 let timeOut = gameData.timeOut;
 let timer = document.getElementById('timer');
 let hacks = document.getElementById('hacks');
-let gameTable = fullField(numRows, numCols, numChars);
 
-let curRow = 0, curCol = 0;
-
-for (let i=0; i<numRows; i++) {
-	for (let j=0; j<numCols; j++) {
-		gameTable[i][j].elem.innerHTML = gameTable[i][j].char;
-		console.log(gameTable[i][j].elem);
-	}
-}
-
-showHacks();
+const gameTable = [	[{},{},{},{},{}],
+					[{},{},{},{},{}],
+					[{},{},{},{},{}],
+					[{},{},{},{},{}],
+					[{},{},{},{},{}],];
+fullField(numChars);
+console.log(gameTable[0][4].char);
+showHacks(gameTable);
 
 if (timeOut > 0) {
 	timerFunc = setInterval(function () {

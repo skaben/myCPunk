@@ -58,7 +58,7 @@ function genChars(numC) {
 	let flag = 0;
 	while (i < numC) {
 		flag = 0;
-		tmpChar = getRandomInt(0,255);
+		tmpChar = getRandomInt(1,255);
 		tmpChar = pad(tmpChar.toString(16),2);
 		for (j=0; j<i; j++) {
 			if (gameChars[j] === tmpChar) {
@@ -73,7 +73,7 @@ function genChars(numC) {
 	return gameChars;
 }
 
-function fullField (numC, numR, chars) {
+function fullField (numR, numC, chars) {
 	let i = 0, j = 0;
 	let gameChars = [];
 	let gameLocalTable = [];
@@ -86,7 +86,7 @@ function fullField (numC, numR, chars) {
 			gameLocalTable[i][j] = {};
 			tChar = gameChars[getRandomInt(0,4)];
 			gameLocalTable[i][j].char = tChar;
-			gameLocalTable[i][j].elem = document.getElementById(`${i} ${j}`);
+			gameLocalTable[i][j].elem = document.querySelectorAll(`[data-coords="${i} ${j}"]`);
 		}
 	}
 	return gameLocalTable;
@@ -115,6 +115,7 @@ let curRow = 0, curCol = 0;
 for (let i=0; i<numRows; i++) {
 	for (let j=0; j<numCols; j++) {
 		gameTable[i][j].elem.innerHTML = gameTable[i][j].char;
+		console.log(gameTable[i][j].elem);
 	}
 }
 

@@ -1,5 +1,5 @@
 let gameData = {
-	timeOut: 300,
+	timeOut: 1200,
 	numHacks: 3, 
 	hacks: [{len: 2, text: 'Взлом 1'}, 
 			{len: 3, text: 'Взлом 2'},
@@ -114,6 +114,49 @@ function showHacks(gameTable) {
 		hacks.innerHTML += `<div class="cpinf_row" id="Hack_${i}">
 			<div class="сpinf_l_cell" id="CharHack_${i}">${hackString}</div>
 			<div class="сpinf_r_cell" id="NameHack_${i}">${gameData.hacks[i].text}</div></div>`
+		hackContent[i] = document.getElementById(`CharHack_${i}`);
+	}
+}
+
+function setHL(row, col, flag) {
+	let i = 0;
+	if (flag===0) {
+		for(i=0; i<numRows; i++) {
+			gameTable[i][col].elem.classList.add('half_hl');
+		}
+	} else {
+		for(i=0; i<numCols; i++) {
+			gameTable[row][i].elem.classList.add('half_hl');
+		}
+	}
+	gameTable[row][col].elem.classList.remove('half_hl');
+	gameTable[row][col].elem.classList.add('full_hl');
+
+}
+
+function delHL(row, col, flag) {
+	let i = 0;
+	if (flag===0) {
+		for(i=0; i<numRows; i++) {
+			gameTable[i][col].elem.classList.remove('half_hl');
+		}
+	} else {
+		for(i=0; i<numCols; i++) {
+			gameTable[row][i].elem.classList.remove('half_hl');
+		}
+	}
+	gameTable[row][col].elem.classList.remove('full_hl');
+}
+
+function compareHack() {
+	for (let i=0; i<gameData.numHacks; i++) {
+		console.log(hackContent[i].textContent);
+		if (bfix.textContent.indexOf(hackContent[i].textContent) >=0 ) {
+			timeFlag = 0; // Стоп таймер. Выиграли.
+			bfix.textContent = `YOU WIN FOR HACK ${i+1}`;
+			timer.style.display = "none";
+			document.removeEventListener("keydown", onKey);
+		}
 	}
 }
 
@@ -125,73 +168,100 @@ let timeFlag = 0;
 
 let colFlag = 0; // При 0 выбираем столбец, при 1 - строку.
 
-let curRow = 0, curCol = 0;
+let curRow = 4, curCol = 0;
 
 let timeOut = gameData.timeOut;
-let timer = document.getElementById('timer');
-let hacks = document.getElementById('hacks');
+const timer = document.getElementById('timer');
+const hacks = document.getElementById('hacks');
+const bfix = document.getElementById('bfix');
+const buffer = document.getElementById('buffer');
 
 const gameTable = [	[{},{},{},{},{}],
 					[{},{},{},{},{}],
 					[{},{},{},{},{}],
 					[{},{},{},{},{}],
 					[{},{},{},{},{}],];
+
+const hackContent = [];
+
 fullField(numChars);
-console.log(gameTable[0][4].char);
 showHacks(gameTable);
+setHL(curRow, curCol, colFlag);
 document.addEventListener("keydown", onKey);
 
 if (timeOut > 0) {
 	timerFunc = setInterval(function () {
-			let seconds = timeOut%60; // Получаем секунды
-			let minutes = timeOut/60%60; // Получаем минуты
-			let hour = timeOut/60/60%60; // Получаем часы
+			let decades = timeOut - Math.floor(timeOut/10)*10;
+			let seconds = (timeOut/10)%60; // Получаем секунды
+			let minutes = (timeOut/10)/60%60; // Получаем минуты
+			let hour = (timeOut/10)/60/60%60; // Получаем часы
 			// Условие если время закончилось то...
 			if (timeOut <= 0) {
-					// Таймер удаляется
+					// Таймер удаляется. Проиграли.
 					clearInterval(timerFunc);
-					gameLose(); // Проиграли!
+					timer.style.display = "none";
+					bfix.textContent = "YOU LOSE!!!";
+					document.removeEventListener("keydown", onKey);
+					// gameLose(); // Проиграли!
 			} else { // Иначе
 					// Создаём строку с выводом времени
+					let strDec = pad(parseInt(decades*10, 10).toString(), 2);
 					let strSec = pad(parseInt(seconds, 10).toString(), 2);
 					let strMin = pad(parseInt(Math.trunc(minutes), 10).toString(), 2);
 					let strHour = pad(parseInt(Math.trunc(hour), 10).toString(), 2);
-					let strOut = `${strHour}:${strMin}:${strSec}`;
+					let strOut = `${strHour}:${strMin}:${strSec}.${strDec}`;
 					// Выводим строку в блок для показа таймера
 					timer.innerHTML = strOut;
 			}
 			timeOut -= timeFlag; // Уменьшаем таймер
-	}, 1000)
+	}, 100)
 } else {
 	timer.style.display = "none";
 }
 
 function onKey(event) {
-	if(event.code === 'ArrowDown' || event.code === 'KeyS') {
-		gameTable[curRow][curCol].elem.classList.remove('full_hl');
+	if((event.code === 'ArrowDown' || event.code === 'KeyS') && colFlag === 1) {
+		buffer.textContent = '';
+		delHL(curRow, curCol, colFlag);
 		if (curRow > 0) {
 			curRow = curRow - 1;
 		} else {
 			curRow = numRows - 1;
 		}
-		gameTable[curRow][curCol].elem.classList.add('full_hl');
-	} else if (event.code === 'ArrowUp' || event.code === 'KeyW') {
-		gameTable[curRow][curCol].elem.classList.remove('full_hl');
+		setHL(curRow, curCol, colFlag);
+		buffer.textContent = gameTable[curRow][curCol].char;
+	} else if ((event.code === 'ArrowUp' || event.code === 'KeyW') && colFlag === 1) {
+		buffer.textContent = '';
+		delHL(curRow, curCol, colFlag);
 		curRow = (curRow + 1) % numRows;
-		gameTable[curRow][curCol].elem.classList.add('full_hl');
-	} else if (event.code === 'ArrowLeft' || event.code === 'KeyA') { 
-		gameTable[curRow][curCol].elem.classList.remove('full_hl');
+		setHL(curRow, curCol, colFlag);
+		buffer.textContent = gameTable[curRow][curCol].char;
+	} else if ((event.code === 'ArrowLeft' || event.code === 'KeyA') && colFlag === 0) { 
+		buffer.textContent = '';
+		delHL(curRow, curCol, colFlag);
 		if (curCol > 0) {
 			curCol = curCol - 1;
 		} else {
 			curCol = numCols - 1;
 		}
-		gameTable[curRow][curCol].elem.classList.add('full_hl');
-	} else if (event.code === 'ArrowRight' || event.code === 'KeyD') { 
-		gameTable[curRow][curCol].elem.classList.remove('full_hl');
+		setHL(curRow, curCol, colFlag);
+		buffer.textContent = gameTable[curRow][curCol].char;
+	} else if ((event.code === 'ArrowRight' || event.code === 'KeyD') && colFlag === 0) { 
+		buffer.textContent = '';
+		delHL(curRow, curCol, colFlag);
 		curCol = (curCol + 1) % numCols;
-		gameTable[curRow][curCol].elem.classList.add('full_hl');
+		setHL(curRow, curCol, colFlag);
+		buffer.textContent = gameTable[curRow][curCol].char;
 	} else if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+		timeFlag = 1; // Запускаем отсчёт с первого выбора!
+		delHL(curRow, curCol, colFlag);
+		colFlag = (colFlag + 1) % 2;
+		setHL(curRow, curCol, colFlag);
+		buffer.textContent = '';
+		bfix.textContent += gameTable[curRow][curCol].char + " ";
+		gameTable[curRow][curCol].char = '';
+		gameTable[curRow][curCol].elem.innerHTML = '';
+		compareHack();
 		// console.log("Enter");
 	}	
 }

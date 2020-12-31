@@ -5,37 +5,38 @@
 <meta charset="utf-8">
 </head>
 <body>
-  <div class="screen screen-wrapper">
+<div class="screen screen-wrapper">
     <div class="screen screen__background_stripes"></div>
     <div class="screen screen__background">
-      <div class="screen screen-border pulse"></div>
+    	<div class="screen screen-border pulse"></div>
     </div>
     <div class="screen screen__effects">
-      <div class="screen__effects-stripe"></div>
+    	<div class="screen__effects-stripe"></div>
     </div>
     <div class="screen screen__content">
-      <div id="outer">
-        <div id="background">
-          <div class="typing interface interface_head">ROBCO INDUSTRIES (C) 2075<br>
-          RTOS TERMINAL ACCESS<br>
-          DEBUG MODE ON<br>
-          </div>
-	  <div class="timer" id="timer"></div>
-        <div class="interface interface_field">
-			<div class="cp_table">
+      	<div id="outer">
+        	<div id="background">
+				<div class="typing interface interface_head">ROBCO INDUSTRIES (C) 2075<br>
+          		RTOS TERMINAL ACCESS<br>
+		  		DEBUG MODE ON
+		  		</div>
+			<div class="timer" id="timer"></div>
+			<div class="interface buffer">БУФЕР: <span id="bfix"></span><span id="buffer"></span></div>  
+    	    <div class="interface interface_field">
+				<div class="cp_table">
+					<div class="cp_row">
+						<div class="cp_cell" data-coords="4 0"></div>
+						<div class="cp_cell" data-coords="4 1"></div>
+						<div class="cp_cell" data-coords="4 2"></div>				
+						<div class="cp_cell" data-coords="4 3"></div>
+						<div class="cp_cell" data-coords="4 4"></div>
+					</div>
 				<div class="cp_row">
-					<div class="cp_cell" data-coords="4 0"></div>
-					<div class="cp_cell" data-coords="4 1"></div>
-					<div class="cp_cell" data-coords="4 2"></div>				
-					<div class="cp_cell" data-coords="4 3"></div>
-					<div class="cp_cell" data-coords="4 4"></div>
-				</div>
-				<div class="cp_row">
-					<div class="cp_cell" data-coords="3 0"></div>
-					<div class="cp_cell" data-coords="3 1"></div>
-					<div class="cp_cell" data-coords="3 2"></div>				
-					<div class="cp_cell" data-coords="3 3"></div>
-					<div class="cp_cell" data-coords="3 4"></div>
+						<div class="cp_cell" data-coords="3 0"></div>
+						<div class="cp_cell" data-coords="3 1"></div>
+						<div class="cp_cell" data-coords="3 2"></div>				
+						<div class="cp_cell" data-coords="3 3"></div>
+						<div class="cp_cell" data-coords="3 4"></div>
 				</div>
 				<div class="cp_row">
 					<div class="cp_cell" data-coords="2 0"></div>
@@ -64,7 +65,7 @@
         </div>
       </div>
     </div>
-  </div>
+</div>
 </body>
 </html>
 <script src='cpunk.js'></script>

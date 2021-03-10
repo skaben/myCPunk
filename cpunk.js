@@ -1,9 +1,10 @@
 let gameData = {
-	timeOut: 1200,
-	numHacks: 3, 
-	hacks: [{len: 2, text: 'Взлом 1'}, 
-			{len: 3, text: 'Взлом 2'},
-			{len: 4, text: 'Взлом 3'}]
+	timeOut: 1200, 	// *0.1 сек.
+	numRows: 8, 	// Строк в игровом поле.
+	numCols: 8,	// Столбцов в игровом поле.
+	numChars: 8,	// Сколько символов отображается на поле и объём буфера
+	numHacks: 1,  	// Число возможных вариантов хака.
+	hacks: [{len: 5, text: 'ОТКЛЮЧЕНИЕ ЛАЗЕРНОЙ СЕТИ'}]
 };
 
 // Полезные вспомогательные функции
@@ -33,15 +34,11 @@ function pad(num, size) {
 }
 
 function gameLose () { // Проигрыш
-	document.location.href = "./ftLose.html";
+	document.location.href = "./cpLose.html";
 }
 
 function gameWin () { // Выигрыш
-	t_field.onclick = function clickDummy(event) {};
-	if (game_data.timeout > 0) {
-		clearInterval(timerFunc);	
-	}
-	document.location.href = "./ftmenu.html";
+	document.location.href = "./cpWin.html";
 }
 
 function getCoords (elem) {
@@ -74,35 +71,42 @@ function genChars(numC) {
 }
 
 function fullField (numChars) {
-	let row = 0, col = 0;
+	let row = 0, col = 0, i = 0;
 	const gameChars = genChars(numChars);
-	const cellsHash=document.querySelectorAll(`[data-coords]`);
+	const cellsHash = field.querySelectorAll(`[data-coords]`);
 	cellsHash.forEach( function(item) {
 		[row, col] = item.getAttribute('data-coords').split(" ");
-		tChar = gameChars[getRandomInt(0,4)];
-		gameTable[row][col].elem = item;
-		gameTable[row][col].char = tChar;
-		gameTable[row][col].elem.innerHTML = tChar;
+		tChar = gameChars[getRandomInt(0,numChars-1)];
+		item.innerText = tChar;
+		gameTable[row][col] = item;
 	});
-	console.log(gameTable[0]);
 }
 
 function getHack(hackLen, gameTable) {
 	let i = 0, flag = 0;
-	let col = getRandomInt(0,4), row = getRandomInt(0,4);
+	let col = getRandomInt(0,numCols-1), row = getRandomInt(0,numRows-1);
 	let hackStr = "";
-	hackStr = gameTable[row][col].char;
+	hackStr = gameTable[row][col].innerText;
 	for (i=1; i<hackLen; i++) {
 		if (flag===0) {
-			row = (row + getRandomInt(0,4)) % numRows;
-			hackStr += " "+gameTable[row][col].char;
+			row1 = (row + getRandomInt(0,numRows-1)) % numRows;
+			while (row1==row) {
+				row1 = (row + getRandomInt(0,numRows-1)) % numRows;
+			} 
+			row = row1;
+			hackStr += " "+gameTable[row][col].innerText;
 			flag = 1;
 		} else {
-			col = (col + getRandomInt(0,4)) % numCols;
-			hackStr += " "+gameTable[row][col].char;
+			col1 = (col + getRandomInt(0,numCols-1)) % numCols;
+			while (col1==col) {
+				col1 = (col + getRandomInt(0,numCols-1)) % numCols;
+			} 
+			col = col1;
+			hackStr += " "+gameTable[row][col].innerText;
 			flag = 0;
 		}
 	}
+	hackStr = ((hackStr.split(' ')).reverse()).join(" "); // Перевернули последовательность
 	return hackStr;
 }
 
@@ -122,15 +126,15 @@ function setHL(row, col, flag) {
 	let i = 0;
 	if (flag===0) {
 		for(i=0; i<numRows; i++) {
-			gameTable[i][col].elem.classList.add('half_hl');
+			gameTable[i][col].classList.add('half_hl');
 		}
 	} else {
 		for(i=0; i<numCols; i++) {
-			gameTable[row][i].elem.classList.add('half_hl');
+			gameTable[row][i].classList.add('half_hl');
 		}
 	}
-	gameTable[row][col].elem.classList.remove('half_hl');
-	gameTable[row][col].elem.classList.add('full_hl');
+	gameTable[row][col].classList.remove('half_hl');
+	gameTable[row][col].classList.add('full_hl');
 
 }
 
@@ -138,14 +142,14 @@ function delHL(row, col, flag) {
 	let i = 0;
 	if (flag===0) {
 		for(i=0; i<numRows; i++) {
-			gameTable[i][col].elem.classList.remove('half_hl');
+			gameTable[i][col].classList.remove('half_hl');
 		}
 	} else {
 		for(i=0; i<numCols; i++) {
-			gameTable[row][i].elem.classList.remove('half_hl');
+			gameTable[row][i].classList.remove('half_hl');
 		}
 	}
-	gameTable[row][col].elem.classList.remove('full_hl');
+	gameTable[row][col].classList.remove('full_hl');
 }
 
 function compareHack() {
@@ -156,37 +160,39 @@ function compareHack() {
 			bfix.textContent = `YOU WIN FOR HACK ${i+1}`;
 			timer.style.display = "none";
 			document.removeEventListener("keydown", onKey);
+                        gameWin();
+		} else if (bfix.textContent.length/3 >= numChars) {
+			gameLose();
 		}
 	}
 }
 
-const numRows = 5;
-const numCols = 5;
-const numChars = 5;
+const numRows = gameData.numRows;
+const numCols = gameData.numCols;
+const numChars = gameData.numChars;
 
 let timeFlag = 0;
 
 let colFlag = 0; // При 0 выбираем столбец, при 1 - строку.
 
-let curRow = 4, curCol = 0;
+let curRow = numRows-1, curCol = 0;
 
 let timeOut = gameData.timeOut;
+const field = document.getElementById('interface_field');
+render();
 const timer = document.getElementById('timer');
 const hacks = document.getElementById('hacks');
 const bfix = document.getElementById('bfix');
 const buffer = document.getElementById('buffer');
 
-const gameTable = [	[{},{},{},{},{}],
-					[{},{},{},{},{}],
-					[{},{},{},{},{}],
-					[{},{},{},{},{}],
-					[{},{},{},{},{}],];
+const gameTable = [...Array(numRows)].map(e => Array(numCols));
 
 const hackContent = [];
 
 fullField(numChars);
 showHacks(gameTable);
 setHL(curRow, curCol, colFlag);
+
 document.addEventListener("keydown", onKey);
 
 if (timeOut > 0) {
@@ -202,7 +208,7 @@ if (timeOut > 0) {
 					timer.style.display = "none";
 					bfix.textContent = "YOU LOSE!!!";
 					document.removeEventListener("keydown", onKey);
-					// gameLose(); // Проиграли!
+					gameLose(); // Проиграли!
 			} else { // Иначе
 					// Создаём строку с выводом времени
 					let strDec = pad(parseInt(decades*10, 10).toString(), 2);
@@ -258,11 +264,26 @@ function onKey(event) {
 		colFlag = (colFlag + 1) % 2;
 		setHL(curRow, curCol, colFlag);
 		buffer.textContent = '';
-		bfix.textContent += gameTable[curRow][curCol].char + " ";
-		gameTable[curRow][curCol].char = '';
-		gameTable[curRow][curCol].elem.innerHTML = '';
+		bfix.textContent += gameTable[curRow][curCol].innerText + " ";
+		gameTable[curRow][curCol].innerText = '';
 		compareHack();
 		// console.log("Enter");
 	}	
 }
 
+function template() {
+	txtField = '<div class="cp_table">\n';
+	for (i = numRows - 1; i >= 0; i--) {
+		txtField += '<div class="cp_row">\n';
+		for (j = 0; j < numCols; j++) {
+			txtField += `<div class="cp_cell" data-coords="${i} ${j}"></div>\n`
+		}
+		txtField += '</div>\n';
+	}
+	txtField += '</div>\n<div class="cp_table cp_table-inf" id="hacks"></div>\n';
+	return txtField;
+}
+
+function render() {
+	field.innerHTML = template();
+}	
